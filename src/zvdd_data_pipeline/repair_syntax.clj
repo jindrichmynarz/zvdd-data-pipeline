@@ -22,7 +22,7 @@
   xslt-repair
   "XSL transformer for cleaning the DDB RDF/XML."
   (let [transformer (.newTransformer (TransformerFactoryImpl.)
-                                     (StreamSource. (io/input-stream (io/resource "clean.xsl"))))]
+                                     (StreamSource. (io/input-stream (io/resource "repair_syntax.xsl"))))]
     (fn [^File file]
       (transform transformer file))))
 

@@ -17,7 +17,7 @@
     
     <!-- Taken from <http://stackoverflow.com/a/1571108/385505> -->
     
-    <!-- identity template -->
+    <!-- Identity template -->
     <xsl:template match="node() | @*">
         <xsl:copy>
             <xsl:apply-templates select="node() | @*" />
@@ -57,7 +57,7 @@
        </xsl:element> 
     </xsl:template>
     
-    <!-- template for the document element -->
+    <!-- Template for the document element -->
     <xsl:template match="/*">
         <xsl:apply-templates select="node()" />
     </xsl:template>
