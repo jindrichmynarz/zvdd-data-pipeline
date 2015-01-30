@@ -2,6 +2,7 @@
   (:gen-class)
   (:require [zvdd-data-pipeline.harvest :refer [harvest-zvdd]]
             [zvdd-data-pipeline.repair-syntax :refer [repair-xml]]
+            [zvdd-data-pipeline.rdf-loader :refer [load-rdf]]
             [taoensso.timbre :as timbre]
             [clojure.java.io :as io]
             [clojure.string :refer [join]]
@@ -24,6 +25,12 @@
 (def ^:private
   harvest-cli
   [["-o" "--output DIR" "Output directory"
+    :parse-fn #'right-trim-slash]
+   ["-h" "--help"]])
+
+(def ^:private
+  load-cli
+  [["-i" "--input DIR" "Input directory"
     :parse-fn #'right-trim-slash]
    ["-h" "--help"]])
 
@@ -95,4 +102,10 @@
                       :else (let [output-dir (io/file output)]
                               (when-not (.exists output-dir) (.mkdir output-dir))
                               (repair-xml input output))))
+      "load" (let [{{:keys [help input]
+                     :as options} :options
+                    :keys [errors summary]} (parse-opts opts load-cli)]
+                (cond (or (and (empty? errors) (empty? options)) help) (exit 0 (usage summary))
+                      errors (exit 1 (error-msg errors))
+                      :else (load-rdf input)))
       (exit 1 (format "Unsupported command `%s`. Supported command include `harvest` and `clean`." command)))))

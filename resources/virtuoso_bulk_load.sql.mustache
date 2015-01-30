@@ -1,0 +1,8 @@
+{{!
+@param String path
+@param IRI    source-graph
+}}
+
+ld_dir('{{path}}', '*.xml', '{{source-graph}}');
+rdf_loader_run();
+DELETE FROM DB.DBA.load_list WHERE ll_state = 2;

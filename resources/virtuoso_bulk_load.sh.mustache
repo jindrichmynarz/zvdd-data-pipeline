@@ -1,0 +1,22 @@
+{{!
+@param String username
+@param String password
+@param String sql-file-path
+}}
+
+#!/bin/bash
+
+echo "HALLO"
+
+if hash isql 2>/dev/null; then
+  ISQL=isql
+else
+  if hash isql-vt 2>/dev/null; then
+    ISQL=isql-vt
+  else
+    echo "Neither isql, nor isql-vt command-line tool is available!"
+    exit 1
+  fi
+fi
+
+$ISQL -U {{username}} -P {{password}} < {{sql-file-path}}
