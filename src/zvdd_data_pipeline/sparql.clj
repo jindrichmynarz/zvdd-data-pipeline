@@ -7,7 +7,6 @@
             [clojure.zip :as zip]
             [clojure.data.zip.xml :as zip-xml]
             [stencil.core :refer [render-file]]
-            [stencil.loader :refer [set-cache]]
             [slingshot.slingshot :refer [throw+ try+]]))
 
 (declare ask execute-query execute-sparql execute-update render-sparql)
