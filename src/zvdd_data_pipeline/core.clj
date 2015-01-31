@@ -71,7 +71,7 @@
   [options-summary]
   (->> ["ZVDD data processing pipeline"
         ""
-        "Usage: java -jar ddb-harvest.jar [command] [options]"
+        "Usage: java -jar zvdd-data-pipeline.jar [command] [options]"
         "Supported commands: harvest, clean"
         ""
         "Options:"
@@ -108,4 +108,5 @@
                 (cond (or (and (empty? errors) (empty? options)) help) (exit 0 (usage summary))
                       errors (exit 1 (error-msg errors))
                       :else (load-rdf input)))
-      (exit 1 (format "Unsupported command `%s`. Supported command include `harvest` and `clean`." command)))))
+      (exit 1 (format "Unsupported command `%s`. Supported command include `harvest`, `clean`, and `load`."
+                      command)))))
