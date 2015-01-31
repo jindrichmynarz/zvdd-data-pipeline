@@ -35,6 +35,8 @@
     (write-to-file sql-file sql-content)
     (write-to-file bash-file bash-content)
     (try
-      (sh (.getAbsolutePath bash-file))
+      (let [out (sh (.getAbsolutePath bash-file))]
+        (when (not= (:exit out) 0)
+          (println (:out out))))
       (finally (.delete sql-file)
                (.delete bash-file)))))
