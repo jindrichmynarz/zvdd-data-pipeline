@@ -25,4 +25,5 @@
                  [clojurewerkz/elastisch "2.1.0"]]
   :main zvdd-data-pipeline.core
   :profiles {:uberjar {:aot :all}}
-  :jvm-opts ["-Xmx4g"])
+  :jvm-opts ["-Xmx4g"]
+  :uberjar-name "zvdd-data-pipeline.jar")
