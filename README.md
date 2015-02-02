@@ -15,6 +15,8 @@ The ZVDD data pre-processing pipeline consists of the following tasks:
 * **Transformation into JSON-LD:** The enriched data is transformed into JSON-LD trees using SPARQL CONSTRUCT queries and [JSON-LD Framing](http://json-ld.org/spec/latest/json-ld-framing/) (TBD).
 * **Indexing in Elasticsearch:** The JSON-LD trees are loaded into Elasticsearch index using a specified mapping (TBD).
 
+A more detailed description of the ZVDD data ingestion pipeline is available [here](https://docs.google.com/document/d/1RlbZSeZ3Y_cIZ5VMEc7JzK0RaiTwVWDx_-DSwpsWDZk/edit?usp=sharing).
+
 ## Compilation
 
 The tool can be compiled using [Leiningen](http://leiningen.org/):
