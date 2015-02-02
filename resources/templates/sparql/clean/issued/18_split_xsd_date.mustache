@@ -1,0 +1,26 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+WITH <{{source-graph}}/issued>
+DELETE {
+  ?s dcterms:issued ?date 
+}
+INSERT {
+  ?s dcterms:issued ?interval .
+  ?interval schema:startDate ?_date ;
+    schema:endDate ?_date .
+}
+WHERE {
+  ?s dcterms:issued ?date .
+  FILTER (isLiteral(?date) && REGEX(?date, "^\\d{4}-\\d{2}-\\d{2}$"))
+  BIND (STRDT(STR(?date), xsd:date) AS ?_date)
+  BIND (IRI(CONCAT("{{source-graph}}/resource/interval/", SHA1(?date))) AS ?interval)
+}

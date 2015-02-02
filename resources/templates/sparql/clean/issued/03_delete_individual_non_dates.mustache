@@ -1,0 +1,24 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+WITH <{{source-graph}}/issued>
+DELETE {
+  ?s dcterms:issued ?nonDate .
+}
+WHERE {
+  VALUES ?nonDate {
+    "Rotterdam"
+    "PPN670173649"
+    "PPN669170356"
+    "nicht angegeben (gefallen im 1.Weltkrieg)"
+  }
+  ?s dcterms:issued ?nonDate .
+}

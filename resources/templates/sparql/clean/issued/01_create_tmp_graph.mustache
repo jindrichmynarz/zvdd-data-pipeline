@@ -1,0 +1,22 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+INSERT {
+  GRAPH <{{source-graph}}/issued> {
+    ?s dcterms:issued ?o .
+  }
+}
+WHERE {
+  GRAPH <{{source-graph}}> {
+    ?s a edm:ProvidedCHO ;
+      dcterms:issued ?o .
+  }
+}

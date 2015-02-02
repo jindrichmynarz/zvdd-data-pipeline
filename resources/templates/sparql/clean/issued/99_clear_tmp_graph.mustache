@@ -1,0 +1,10 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+CLEAR GRAPH <{{source-graph}}/issued>

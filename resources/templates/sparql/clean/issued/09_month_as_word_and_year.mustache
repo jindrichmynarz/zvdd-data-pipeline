@@ -1,0 +1,39 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+WITH <{{source-graph}}/issued>
+DELETE {
+  ?s dcterms:issued ?_date .
+}
+INSERT {
+  ?s dcterms:issued ?date .
+}
+WHERE {
+  ?s dcterms:issued ?_date .
+  FILTER (isLiteral(?_date) && REGEX(?_date, "^\\w+\\s\\d{4}$"))
+  BIND (LCASE(REPLACE(?_date, "^(\\w+)\\s\\d{4}$", "$1")) AS ?month)
+  BIND (REPLACE(?_date, "^\\w+\\s(\\d{4})$", "$1") AS ?year)
+  VALUES (?month      ?monthNumber) {
+         ("januar"    "01")
+         ("februar"   "02")
+         ("märz"      "03")
+         ("april"     "04")
+         ("mai"       "05")
+         ("juni"      "06")
+         ("juli"      "07")
+         ("august"    "08")
+         ("september" "09")
+         ("oktober"   "10")
+         ("november"  "11")
+         ("dezember"  "12")
+  }
+  BIND (CONCAT(?year, "-", ?monthNumber) AS ?date)
+}

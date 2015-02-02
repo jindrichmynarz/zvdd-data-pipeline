@@ -1,0 +1,25 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+WITH <{{source-graph}}/issued>
+DELETE {
+  ?s dcterms:issued ?_date .  
+}
+INSERT {
+  ?s dcterms:issued ?date .
+}
+WHERE {
+  ?s dcterms:issued ?_date .
+  FILTER (isLiteral(?_date) && REGEX(?_date, "^\\d{12}$"))
+  BIND (REPLACE(?_date, "^(\\d{4})\\d{8}$", "$1") AS ?startYear) 
+  BIND (REPLACE(?_date, "^\\d{8}(\\d{4})$", "$1") AS ?endYear)
+  BIND (CONCAT(?startYear, "-", ?endYear) AS ?date)
+}

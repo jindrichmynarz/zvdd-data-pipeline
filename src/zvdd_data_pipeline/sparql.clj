@@ -3,6 +3,7 @@
             [taoensso.timbre :as timbre]
             [com.stuartsierra.component :as component]
             [clj-http.client :as client]
+            [clojure.java.io :as io]
             [clojure.xml :as xml]
             [clojure.zip :as zip]
             [clojure.data.zip.xml :as zip-xml]
@@ -60,7 +61,10 @@
 (defn- render-sparql
   "Render SPARQL from Mustache template on @template-path using @data."
   [template-path & {:keys [data]}]
-  (render-file (str "templates/sparql/" template-path ".mustache") data))
+  (let [path (if (.isAbsolute (io/as-file template-path))
+               template-path
+               (str "templates/sparql/" template-path ".mustache"))]
+    (render-file path data)))
 
 (defn- xml->zipper
   "Take XML string @s, parse it, and return XML zipper"
@@ -103,7 +107,7 @@
                   :endpoint-url (get-in sparql-endpoint [:endpoints :update-url])
                   :method :POST
                   :request-string (render-sparql template-path
-                                                 :data (assoc data :virtuoso (:virtuoso? sparql-endpoint)))))
+                                                 :data (assoc data :virtuoso? (:virtuoso? sparql-endpoint)))))
 
 (defn post-graph
   "Use SPARQL 1.1 Graph Store to POST @payload into a graph named @graph-uri."

@@ -1,0 +1,28 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+WITH <{{source-graph}}/issued>
+DELETE {
+  ?s dcterms:issued ?_date .
+}
+INSERT {
+  ?s dcterms:issued ?date .
+}
+WHERE {
+  ?s dcterms:issued ?_date .
+  FILTER (isLiteral(?_date) && REGEX(?_date, "^\\d{2}XX$"))
+  BIND (REPLACE(?_date, "^(\\d{2})XX$", "$1") AS ?century)
+  BIND (CONCAT(?century, "01") AS ?startYear)
+  BIND (STR(xsd:integer(?century) + 1) AS ?_endCentury)
+  BIND (IF(STRLEN(?_endCentury) = 1, CONCAT("0", ?_endCentury), ?_endCentury) AS ?endCentury)
+  BIND (CONCAT(?endCentury, "00") AS ?endYear)
+  BIND (CONCAT(?startYear, "-", ?endYear) AS ?date)
+}

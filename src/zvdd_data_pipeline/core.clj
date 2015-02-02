@@ -3,6 +3,7 @@
   (:require [zvdd-data-pipeline.harvest :refer [harvest-zvdd]]
             [zvdd-data-pipeline.repair-syntax :refer [repair-xml]]
             [zvdd-data-pipeline.rdf-loader :refer [load-rdf]]
+            [zvdd-data-pipeline.clean :refer [clean]]
             [zvdd-data-pipeline.util :refer [exit]]
             [taoensso.timbre :as timbre]
             [clojure.java.io :as io]
@@ -14,14 +15,8 @@
 ; ----- Private vars -----
 
 (def ^:private
-  repair-cli
-  [["-i" "--input INPUT" "Input directory"
-    :parse-fn #'right-trim-slash
-    :validate [#(let [f (io/file %)] (and (.exists f) (.isDirectory f)))
-               "The input directory doesn't exist or isn't a directory!"]]
-   ["-o" "--output OUTPUT" "Output directory"
-    :parse-fn #'right-trim-slash]
-   ["-h" "--help"]])
+  clean-cli
+  [["-h" "--help"]])
 
 (def ^:private
   harvest-cli
@@ -35,6 +30,16 @@
     :parse-fn #'right-trim-slash]
    ["-h" "--help"]])
 
+(def ^:private
+  repair-cli
+  [["-i" "--input INPUT" "Input directory"
+    :parse-fn #'right-trim-slash
+    :validate [#(let [f (io/file %)] (and (.exists f) (.isDirectory f)))
+               "The input directory doesn't exist or isn't a directory!"]]
+   ["-o" "--output OUTPUT" "Output directory"
+    :parse-fn #'right-trim-slash]
+   ["-h" "--help"]])
+
 ; ----- Private functions -----
 
 (defn- error-msg
@@ -45,7 +50,7 @@
 (defn- init-logger
   "Initialize logger"
   []
-  (let [logfile "log/ddb_harvest.log"
+  (let [logfile "log/zvdd_data_pipeline.log"
         log-directory (io/file "log")]
     (when-not (.exists log-directory) (.mkdir log-directory))
     (timbre/set-config! [:appenders :standard-out :enabled?] false)
@@ -64,7 +69,7 @@
   (->> ["ZVDD data processing pipeline"
         ""
         "Usage: java -jar zvdd-data-pipeline.jar [command] [options]"
-        "Supported commands: harvest, repair, load"
+        "Supported commands: harvest, repair, load, clean"
         ""
         "Options:"
         options-summary]
@@ -75,30 +80,34 @@
 (defn -main
   [& args]
   (init-logger)
-  (let [[command & opts] args]
-    (case command
-      "harvest" (let [{{:keys [help output]
-                        :as options} :options
-                       :keys [errors summary]} (parse-opts opts harvest-cli)]
-                  (cond (or (and (empty? errors) (empty? options)) help) (exit 0 (usage summary))
+  (let [[command & opts] args
+        handle-fn (fn [callback {{:keys [help]
+                                  :as options} :options
+                                 :keys [errors summary]}]
+                    (cond (or (and (empty? errors) (empty? options)) help) (exit 0 (usage summary))
                         errors (exit 1 (error-msg errors))
-                        :else (let [output-dir (io/file output)] 
+                        :else (callback)))]
+    (case command
+      "harvest" (let [{{:keys [output]} :options
+                       :as options} (parse-opts opts harvest-cli)]
+                  (handle-fn (fn []
+                               (let [output-dir (io/file output)] 
+                                 (when-not (.exists output-dir) (.mkdir output-dir))
+                                 (harvest-zvdd output)))
+                             options))
+      "repair" (let [{{:keys [input output]} :options
+                     :as options} (parse-opts opts repair-cli)]
+                 (handle-fn (fn []
+                              (let [output-dir (io/file output)]
                                 (when-not (.exists output-dir) (.mkdir output-dir))
-                                (harvest-zvdd output))))
-      "repair" (let [{{:keys [help input output]
-                      :as options} :options
-                     :keys [errors summary]
-                     :as all} (parse-opts opts repair-cli)]
-                (cond (or (and (empty? errors) (empty? options)) help) (exit 0 (usage summary))
-                      errors (exit 1 (error-msg errors))
-                      :else (let [output-dir (io/file output)]
-                              (when-not (.exists output-dir) (.mkdir output-dir))
-                              (repair-xml input output))))
-      "load" (let [{{:keys [help input]
-                     :as options} :options
-                    :keys [errors summary]} (parse-opts opts load-cli)]
-                (cond (or (and (empty? errors) (empty? options)) help) (exit 0 (usage summary))
-                      errors (exit 1 (error-msg errors))
-                      :else (load-rdf input)))
-      (exit 1 (format "Unsupported command `%s`. Supported command include `harvest`, `repair`, and `load`."
+                                (repair-xml input output)))
+                            options)) 
+      "load" (let [{{:keys [input]} :options
+                    :as options} (parse-opts opts load-cli)]
+               (handle-fn (fn [] (load-rdf input))
+                          options))
+      "clean" (let [options (parse-opts opts clean-cli)]
+                (handle-fn clean options))
+      (exit 1 (format "Unsupported command `%s`.
+                      Supported command include `harvest`, `repair`, `load`, and `clean`."
                       command)))))

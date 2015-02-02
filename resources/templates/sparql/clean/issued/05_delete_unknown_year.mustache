@@ -1,0 +1,19 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+WITH <{{source-graph}}/issued>
+DELETE {
+  ?s dcterms:issued ?_date .
+}
+WHERE {
+  ?s dcterms:issued ?_date .
+  FILTER (isLiteral(?_date) && CONTAINS(?_date, "Jahr nicht angegeben"))
+}
