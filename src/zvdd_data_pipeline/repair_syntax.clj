@@ -4,27 +4,28 @@
            [org.apache.commons.io FilenameUtils]
            [javax.xml.transform Transformer]
            [net.sf.saxon TransformerFactoryImpl]
+           [net.sf.saxon.jaxp TemplatesImpl]
            [javax.xml.transform.stream StreamResult StreamSource]))
 
 ; ----- Private functions -----
 
 (defn- transform
-  "Executes XSL transformation via @transformer.
-  XML input is loaded from the file on @file-path.
+  "Executes XSL transformation via @cached-xslt.
+  XML input is loaded from @file.
   Output is returned as string."
-  [^Transformer transformer
+  [^TemplatesImpl cached-xslt
    ^File file] 
-  (with-out-str (.transform transformer
+  (with-out-str (.transform (.newTransformer cached-xslt)
                             (StreamSource. file)
                             (StreamResult. *out*))))
 
 (def ^:private
   xslt-repair
   "XSL transformer for cleaning the DDB RDF/XML."
-  (let [transformer (.newTransformer (TransformerFactoryImpl.)
-                                     (StreamSource. (io/input-stream (io/resource "repair_syntax.xsl"))))]
+  (let [cached-xslt (.newTemplates (TransformerFactoryImpl.)
+                                   (StreamSource. (io/input-stream (io/resource "repair_syntax.xsl"))))]
     (fn [^File file]
-      (transform transformer file))))
+      (transform cached-xslt file))))
 
 ; ----- Public functions -----
 
@@ -35,4 +36,4 @@
         clean-fn (fn [file]
                    (let [file-name (FilenameUtils/removeExtension (.getName file))]
                      (spit (format "%s/%s.xml" output-dir file-name) (xslt-repair file))))]
-    (dorun (map clean-fn files))))
+    (dorun (pmap clean-fn files))))
