@@ -5,6 +5,15 @@
 
 ; ----- Public functions -----
 
+(defn exit
+  "Exit with @status and message @msg.
+  @status 0 is OK, @status 1 indicates error."
+  [^Integer status
+   ^String msg]
+  {:pre [(#{0 1} status)]}
+  (println msg)
+  (System/exit status))
+
 (defn lazy-cat'
   "Lazily concatenates lazy sequence of sequences @colls.
   Taken from <http://stackoverflow.com/a/26595111/385505>."
@@ -32,4 +41,4 @@
 (defonce config
   (if-let [zvdd-config (:zvdd-config env)]
     (edn/read-string (slurp zvdd-config))
-    (throw (Exception.) "Please set the environment variable ZVDD_CONFIG.")))
+    (exit 1 "Please set the environment variable ZVDD_CONFIG.")))

@@ -3,6 +3,7 @@
   (:require [zvdd-data-pipeline.harvest :refer [harvest-zvdd]]
             [zvdd-data-pipeline.repair-syntax :refer [repair-xml]]
             [zvdd-data-pipeline.rdf-loader :refer [load-rdf]]
+            [zvdd-data-pipeline.util :refer [exit]]
             [taoensso.timbre :as timbre]
             [clojure.java.io :as io]
             [clojure.string :refer [join]]
@@ -40,15 +41,6 @@
   [errors]
   (str "The following errors occurred while parsing your command:\n\n"
        (join \newline errors)))
-
-(defn- exit
-  "Exit with @status and message @msg.
-  @status 0 is OK, @status 1 indicates error."
-  [^Integer status
-   ^String msg]
-  {:pre [(#{0 1} status)]}
-  (println msg)
-  (System/exit status))
 
 (defn- init-logger
   "Initialize logger"
