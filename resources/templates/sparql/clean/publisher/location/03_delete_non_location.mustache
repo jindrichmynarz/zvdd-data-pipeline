@@ -1,0 +1,25 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+WITH <{{source-graph}}/location>
+DELETE {
+  ?s schema:addressLocality ?nonLocation .
+}
+WHERE {
+  VALUES ?nonLocation {
+    "1625"
+    "6 Bl., 446 S., 9 Bl"
+    "[S.l.]"
+    "[s.l.]"
+    "[S. l.]"
+    "S.l."
+    "s.l."
+  }
+  ?s schema:addressLocality ?nonLocation .
+}

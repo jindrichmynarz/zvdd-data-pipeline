@@ -1,0 +1,19 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+WITH <{{source-graph}}>
+DELETE {
+  ?s dc:language ?language .
+}
+WHERE {
+  ?s a edm:ProvidedCHO ;
+    dc:language ?language .
+}

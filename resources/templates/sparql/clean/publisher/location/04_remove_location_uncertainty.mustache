@@ -1,0 +1,20 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+WITH <{{source-graph}}/location>
+DELETE {
+  ?s schema:addressLocality ?_location .
+}
+INSERT {
+  ?s schema:addressLocality ?location .
+}
+WHERE {
+  ?s schema:addressLocality ?_location .
+  BIND (REPLACE(?_location, "^\\[|\\]$|\\s\\[u\\.a\\.\\]$", "") AS ?location)
+}

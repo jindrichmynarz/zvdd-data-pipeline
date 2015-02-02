@@ -1,0 +1,16 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+DELETE WHERE {
+  GRAPH <{{source-graph}}> {
+    ?s schema:addressLocality ?o .
+  }
+}

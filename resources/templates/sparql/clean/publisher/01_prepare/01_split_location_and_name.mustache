@@ -1,0 +1,28 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+WITH <{{source-graph}}>
+DELETE {
+  ?s dc:publisher ?_publisher .
+}
+INSERT {
+  ?s schema:publisher ?publisher .
+  ?publisher schema:location ?location ;
+    schema:name ?publisherName .
+  ?location schema:addressLocality ?locationName .
+}
+WHERE {
+  ?s a edm:ProvidedCHO ;
+    dc:publisher ?_publisher .
+  FILTER (isLiteral(?_publisher) && CONTAINS(?_publisher, ": "))
+  BIND (STRBEFORE(?_publisher, ": ") AS ?locationName)
+  BIND (STRAFTER(?_publisher, ": ") AS ?publisherName)
+  BIND (IRI(CONCAT("{{source-graph}}/resource/publisher/", SHA1(?_publisher))) AS ?publisher)
+  BIND (IRI(CONCAT("{{source-graph}}/resource/location/", SHA1(?_publisher))) AS ?location)
+}

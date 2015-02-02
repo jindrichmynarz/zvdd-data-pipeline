@@ -1,0 +1,23 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+WITH <{{source-graph}}>
+DELETE {
+  ?s dc:publisher ?_publisher .
+}
+INSERT {
+  ?s schema:publisher ?publisher .
+  ?publisher schema:name ?_publisher .
+}
+WHERE {
+  ?s a edm:ProvidedCHO ;
+    dc:publisher ?_publisher .
+  FILTER (isLiteral(?_publisher) && !CONTAINS(?_publisher, ": "))
+  BIND (IRI(CONCAT("{{source-graph}}/resource/publisher/", SHA1(?_publisher))) AS ?publisher)
+}

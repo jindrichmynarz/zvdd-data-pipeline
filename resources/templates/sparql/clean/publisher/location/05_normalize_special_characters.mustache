@@ -1,0 +1,33 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+WITH <{{source-graph}}/location>
+DELETE {
+  ?s schema:addressLocality ?_location .
+}
+INSERT {
+  ?s schema:addressLocality ?location .
+}
+WHERE {
+  ?s schema:addressLocality ?_location .
+  FILTER (CONTAINS(?_location, "ß") ||
+          CONTAINS(?_location, "ä") ||
+          CONTAINS(?_location, "æ") ||
+          CONTAINS(?_location, "ö") ||
+          CONTAINS(?_location, "ø") ||
+          CONTAINS(?_location, "ü"))
+  BIND (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?_location,
+        "ß", "ss"),
+        "ä", "ae"),
+        "æ", "ae"),
+        "ö", "oe"),
+        "ø", "o"),
+        "ü", "ue")
+  AS ?location)
+}

@@ -1,0 +1,19 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+INSERT {
+  GRAPH <{{source-graph}}/location> {
+    ?s schema:addressLocality ?location .
+  }
+}
+WHERE {
+  GRAPH <{{source-graph}}> {
+    ?s schema:addressLocality ?location .
+  }
+}

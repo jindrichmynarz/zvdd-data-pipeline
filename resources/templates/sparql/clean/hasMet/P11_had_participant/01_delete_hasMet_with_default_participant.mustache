@@ -1,0 +1,27 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+WITH <{{source-graph}}>
+DELETE {
+  ?s edm:hasMet ?hasMet .
+  ?hasMet ?p ?o .
+}
+WHERE {
+  {
+    SELECT ?s ?hasMet
+    WHERE {
+      ?s a edm:ProvidedCHO ;
+        edm:hasMet ?hasMet .
+      ?hasMet crm:P11_had_participant <http://d-nb.info/gnd/> .
+    }
+  }
+  ?hasMet ?p ?o .
+}
