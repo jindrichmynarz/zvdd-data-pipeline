@@ -14,7 +14,7 @@
 ; ----- Private vars -----
 
 (def ^:private
-  clean-cli
+  repair-cli
   [["-i" "--input INPUT" "Input directory"
     :parse-fn #'right-trim-slash
     :validate [#(let [f (io/file %)] (and (.exists f) (.isDirectory f)))
@@ -64,7 +64,7 @@
   (->> ["ZVDD data processing pipeline"
         ""
         "Usage: java -jar zvdd-data-pipeline.jar [command] [options]"
-        "Supported commands: harvest, clean"
+        "Supported commands: harvest, repair, load"
         ""
         "Options:"
         options-summary]
@@ -85,10 +85,10 @@
                         :else (let [output-dir (io/file output)] 
                                 (when-not (.exists output-dir) (.mkdir output-dir))
                                 (harvest-zvdd output))))
-      "clean" (let [{{:keys [help input output]
+      "repair" (let [{{:keys [help input output]
                       :as options} :options
                      :keys [errors summary]
-                     :as all} (parse-opts opts clean-cli)]
+                     :as all} (parse-opts opts repair-cli)]
                 (cond (or (and (empty? errors) (empty? options)) help) (exit 0 (usage summary))
                       errors (exit 1 (error-msg errors))
                       :else (let [output-dir (io/file output)]
@@ -100,5 +100,5 @@
                 (cond (or (and (empty? errors) (empty? options)) help) (exit 0 (usage summary))
                       errors (exit 1 (error-msg errors))
                       :else (load-rdf input)))
-      (exit 1 (format "Unsupported command `%s`. Supported command include `harvest`, `clean`, and `load`."
+      (exit 1 (format "Unsupported command `%s`. Supported command include `harvest`, `repair`, and `load`."
                       command)))))
