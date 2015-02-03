@@ -8,7 +8,8 @@
             [clojure.zip :as zip]
             [clojure.data.zip.xml :as zip-xml]
             [stencil.core :refer [render-file]]
-            [slingshot.slingshot :refer [throw+ try+]]))
+            [slingshot.slingshot :refer [throw+ try+]])
+  (:import [org.apache.commons.io FilenameUtils]))
 
 (declare ask execute-query execute-sparql execute-update render-sparql)
 
@@ -142,6 +143,18 @@
          (map-fn select-fn)
          (take-while seq)
          lazy-cat')))
+
+(defn templates-from-dir
+  "List SPARQL templates in Mustache from a given @dir."
+  [dir]
+  (->> dir 
+       io/resource
+       io/as-file
+       file-seq
+       (filter (fn [f]
+                 (and (.isFile f)
+                      (= (FilenameUtils/getExtension (.getAbsolutePath f)) "mustache"))))
+       (map #(.getAbsolutePath %))))
 
 ; ----- Records -----
 

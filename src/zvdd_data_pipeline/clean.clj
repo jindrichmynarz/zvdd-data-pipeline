@@ -1,8 +1,6 @@
 (ns zvdd-data-pipeline.clean
   (:require [zvdd-data-pipeline.util :refer [config]]
-            [zvdd-data-pipeline.sparql :as sparql]
-            [clojure.java.io :as io])
-  (:import [org.apache.commons.io FilenameUtils]))
+            [zvdd-data-pipeline.sparql :as sparql]))
 
 ; ----- Public functions -----
 
@@ -10,14 +8,7 @@
   "Execute SPARQL Update operations for cleaning data"
   []
   (let [endpoint (sparql/load-endpoint)
-        updates (->> "templates/sparql/clean"
-                     io/resource
-                     io/as-file
-                     file-seq
-                     (filter (fn [f]
-                               (and (.isFile f)
-                                    (= (FilenameUtils/getExtension (.getAbsolutePath f)) "mustache"))))
-                     (map #(.getAbsolutePath %)))
+        updates (sparql/templates-from-dir "templates/sparql/clean") 
         update-fn (fn [update]
                     (sparql/execute-update endpoint
                                            update
