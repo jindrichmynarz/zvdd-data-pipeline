@@ -1,6 +1,12 @@
 # ZVDD data ingestion pipeline 
 
-Pre-processing pipeline for data from [Zentrales Verzeichnis Digitalisierter Drucke](http://www.zvdd.de/) for efficient indexing in Elasticsearch.
+Pre-processing pipeline for data from [Zentrales Verzeichnis Digitalisierter Drucke](http://www.zvdd.de/) (ZVDD) for efficient indexing in Elasticsearch.
+
+## Configuration
+
+In order to be able to harvest ZVDD data from the API of Deutsche Digitale Bibliothek (DDB), follow [these instructions](https://api.deutsche-digitale-bibliothek.de/doku/display/ADD/API+der+Deutschen+Digitalen+Bibliothek#APIderDeutschenDigitalenBibliothek-Registrierung) to obtain an API key. Make your API key available as value of the `DDB_API_KEY` environment variable (e.g., `export DDB_API_KEY=XYZ`).
+
+Create a copy of the [sample configuration file](https://github.com/jindrichmynarz/zvdd-data-pipeline/blob/master/config.edn) and edit it. The configuration uses the [EDN syntax](https://github.com/edn-format/edn). If you're using the default configuration of Virtuoso RDF store running on the same machine as you will run the data ingestion pipeline, then you don't need to change the configuration. Export the path to the configuration file to the `ZVDD_CONFIG` environment variable (e.g., `export ZVDD_CONFIG=/path/to/config.edn`).
 
 ## Usage
 
