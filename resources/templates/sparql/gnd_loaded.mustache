@@ -1,0 +1,10 @@
+{{!
+@param IRI gnd-graph
+}}
+
+ASK
+WHERE {
+  GRAPH <{{gnd-graph}}> {
+    [] ?p [] . 
+  }
+}
