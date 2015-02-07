@@ -1,0 +1,38 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+INSERT {
+  GRAPH <{{source-graph}}> {
+    ?source schema:publisher ?target .
+  }
+}
+WHERE {
+  GRAPH <{{source-graph}}> {
+    ?source schema:publisher [
+      schema:name ?name ;
+      schema:location/schema:addressLocality ?location 
+    ] .
+  }
+  GRAPH <{{target-graph}}> {
+    VALUES ?nameProperty {
+      gndo:preferredNameForTheCorporateBody
+      gndo:variantNameForTheCorporateBody
+    }
+    VALUES ?locationProperty {
+      gndo:preferredNameForThePlaceOrGeographicName
+      gndo:variantNameForThePlaceOrGeographicName
+    }
+    ?target ?nameProperty ?name ;
+      gndo:placeOfBusiness [
+        ?locationProperty ?location
+      ] .
+  }
+}

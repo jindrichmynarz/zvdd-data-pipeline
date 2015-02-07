@@ -8,6 +8,8 @@ In order to be able to harvest ZVDD data from the API of Deutsche Digitale Bibli
 
 Create a copy of the [sample configuration file](https://github.com/jindrichmynarz/zvdd-data-pipeline/blob/master/config.edn) and edit it. The configuration uses the [EDN syntax](https://github.com/edn-format/edn). If you're using the default configuration of Virtuoso RDF store running on the same machine as you will run the data ingestion pipeline, then you don't need to change the configuration. Export the path to the configuration file to the `ZVDD_CONFIG` environment variable (e.g., `export ZVDD_CONFIG=/path/to/config.edn`).
 
+For linking Gemeinsame Normdatei (GND), load [GND RDF dump](http://datendienst.dnb.de/cgi-bin/mabit.pl?userID=opendata&pass=opendata&cmd=login) into named graph `<http://d-nb.info/standards/elementset/gnd#>`.
+
 ## Usage
 
 The ZVDD data pre-processing pipeline consists of the following tasks:
