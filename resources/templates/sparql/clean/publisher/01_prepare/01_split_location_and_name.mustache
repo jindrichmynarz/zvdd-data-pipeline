@@ -7,6 +7,8 @@
 DEFINE sql:log-enable 2
 {{/virtuoso?}}
 
+{{> templates/sparql/prefixes.mustache}}
+
 WITH <{{source-graph}}>
 DELETE {
   ?s dc:publisher ?_publisher .

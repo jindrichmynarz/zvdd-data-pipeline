@@ -7,6 +7,8 @@
 DEFINE sql:log-enable 2
 {{/virtuoso?}}
 
+{{> templates/sparql/prefixes.mustache}}
+
 INSERT {
   GRAPH <{{source-graph}}/location> {
     ?s schema:addressLocality ?location .
