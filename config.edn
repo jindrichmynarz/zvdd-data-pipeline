@@ -1,0 +1,6 @@
+{:sparql-endpoint {:crud-url "http://localhost:8890/sparql-graph-crud-auth"
+                   :query-url "http://localhost:8890/sparql"
+                   :update-url "http://localhost:8890/sparql-auth"
+                   :username "dba"
+                   :password "dba"}
+ :data {:source-graph "http://zvdd.de"}}
