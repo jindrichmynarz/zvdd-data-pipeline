@@ -1,0 +1,25 @@
+{{!
+@param Boolean virtuoso?
+@param IRI     source-graph
+}}
+
+{{#virtuoso?}}
+DEFINE sql:log-enable 2
+{{/virtuoso?}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+WITH <{{source-graph}}>
+DELETE {
+  ?s dc:contributor ?o .
+}
+INSERT {
+  ?s schema:contributor ?contributor .
+  ?contributor schema:name ?o .
+}
+WHERE {
+  ?s a edm:ProvidedCHO ;
+    dc:contributor ?o .
+  FILTER (isLiteral(?o))
+  BIND (IRI(CONCAT("{{source-graph}}/resource/contributor/", SHA1(?o))) AS ?contributor)
+}
