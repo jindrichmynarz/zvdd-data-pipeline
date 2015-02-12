@@ -4,6 +4,8 @@
             [zvdd-data-pipeline.repair-syntax :refer [repair-xml]]
             [zvdd-data-pipeline.rdf-loader :refer [load-rdf]]
             [zvdd-data-pipeline.clean :refer [clean]]
+            [zvdd-data-pipeline.link :refer [link]]
+            [zvdd-data-pipeline.link-harvester :refer [harvest-links]]
             [zvdd-data-pipeline.util :refer [exit]]
             [taoensso.timbre :as timbre]
             [clojure.java.io :as io]
@@ -24,6 +26,16 @@
   [["-o" "--output DIR" "Output directory"
     :parse-fn #'right-trim-slash]
    ["-h" "--help"]])
+
+(def ^:private
+  harvest-links-cli
+  [["-o" "--output DIR" "Output directory"
+    :parse-fn #'right-trim-slash]
+   ["-h" "--help"]])
+
+(def ^:private
+  link-cli
+  [["-h" "--help"]])
 
 (def ^:private
   load-cli
@@ -73,7 +85,7 @@
   (->> ["ZVDD data processing pipeline"
         ""
         "Usage: java -jar zvdd-data-pipeline.jar [command] [options]"
-        "Supported commands: harvest, repair, load, clean"
+        "Supported commands: harvest, repair, load, clean, link, harvest-links"
         ""
         "Options:"
         options-summary]
@@ -112,6 +124,17 @@
                           options))
       "clean" (let [options (parse-opts opts clean-cli)]
                 (handle-fn clean options))
+      "link" (let [options (parse-opts opts link-cli)]
+               (handle-fn link options))
+      "harvest-links" (let [{{:keys [output]} :options
+                             :as options} (parse-opts opts harvest-links-cli)]
+                        (handle-fn (partial harvest-links output) options))
       (exit 1 (format "Unsupported command `%s`.
-                      Supported command include `harvest`, `repair`, `load`, and `clean`."
+                      Supported command include:
+                      - `harvest`
+                      - `repair`
+                      - `load`
+                      - `clean`
+                      - `link`
+                      - `harvest-links`"
                       command)))))

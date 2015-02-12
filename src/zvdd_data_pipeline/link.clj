@@ -8,9 +8,9 @@
   "Execute linking via SPARQL Update operations"
   []
   (let [endpoint (sparql/load-endpoint)
+        source-graph (get-in config [:data :source-graph])
         update-fn (fn [update]
-                    (sparql/execute-update endpoint
-                                           update
-                                           :data {:source-graph (get-in config [:data :source-graph])}))]
+                    (sparql/execute-update endpoint update
+                                           :data {:source-graph source-graph}))]
     (sparql/gnd-loaded? endpoint)
     (dorun (map update-fn (sparql/templates-from-dir "templates/sparql/link")))))

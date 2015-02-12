@@ -13,7 +13,7 @@
 
 ; ----- Public functions -----
 
-(defn harvest-urls
+(defn harvest-links
   "Harvest links into @output RDF/XML file."
   [^String output]
   (let [; Last parameter of SinkCallback is a boolean flag indicating if header data should be included.
