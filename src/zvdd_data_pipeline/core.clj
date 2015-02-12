@@ -6,6 +6,7 @@
             [zvdd-data-pipeline.clean :refer [clean]]
             [zvdd-data-pipeline.link :refer [link]]
             [zvdd-data-pipeline.link-harvester :refer [harvest-links]]
+            [zvdd-data-pipeline.sparql-extractor :refer [extract-rdf]]
             [zvdd-data-pipeline.util :refer [exit]]
             [taoensso.timbre :as timbre]
             [clojure.java.io :as io]
@@ -20,6 +21,12 @@
 (def ^:private
   clean-cli
   [["-h" "--help"]])
+
+(def ^:private
+  extract-rdf-cli
+  [["-o" "--output DIR" "Output directory"
+    :parse-fn #'right-trim-slash]
+   ["-h" "--help"]])
 
 (def ^:private
   harvest-cli
@@ -85,7 +92,7 @@
   (->> ["ZVDD data processing pipeline"
         ""
         "Usage: java -jar zvdd-data-pipeline.jar [command] [options]"
-        "Supported commands: harvest, repair, load, clean, link, harvest-links"
+        "Supported commands: harvest, repair, load, clean, link, harvest-links, extract-rdf"
         ""
         "Options:"
         options-summary]
@@ -129,6 +136,10 @@
       "harvest-links" (let [{{:keys [output]} :options
                              :as options} (parse-opts opts harvest-links-cli)]
                         (handle-fn (partial harvest-links output) options))
+      "extract-rdf" (let [{{:keys [output]} :options
+                           graphs :arguments
+                           :as options} (parse-opts opts extract-rdf-cli)]
+                      (handle-fn (partial extract-rdf output graphs) options))
       (exit 1 (format "Unsupported command `%s`.
                       Supported command include:
                       - `harvest`
@@ -136,5 +147,6 @@
                       - `load`
                       - `clean`
                       - `link`
-                      - `harvest-links`"
+                      - `harvest-links`
+                      - `extract-rdf`"
                       command)))))

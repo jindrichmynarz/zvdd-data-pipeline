@@ -1,0 +1,22 @@
+{{!
+@param IRI source-graph
+@param int limit
+@param int offset
+}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+SELECT ?resource
+WHERE {
+  {
+    SELECT DISTINCT ?resource
+    WHERE {
+      GRAPH <{{source-graph}}> {
+        ?resource a edm:ProvidedCHO .
+      }
+    }
+    ORDER BY ASC(?resource)
+  }
+}
+LIMIT {{limit}}
+OFFSET {{offset}}
