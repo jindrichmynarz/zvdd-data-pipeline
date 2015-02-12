@@ -1,5 +1,5 @@
 (ns zvdd-data-pipeline.sparql
-  (:require [zvdd-data-pipeline.util :refer [config lazy-cat' url?]]
+  (:require [zvdd-data-pipeline.util :refer [config exit lazy-cat' url?]]
             [taoensso.timbre :as timbre]
             [com.stuartsierra.component :as component]
             [clj-http.client :as client]
@@ -7,7 +7,7 @@
             [clojure.xml :as xml]
             [clojure.zip :as zip]
             [clojure.data.zip.xml :as zip-xml]
-            [stencil.core :refer [render-file]]
+            [stencil.core :refer [render-file render-string]]
             [slingshot.slingshot :refer [throw+ try+]])
   (:import [org.apache.commons.io FilenameUtils]))
 
@@ -62,10 +62,9 @@
 (defn- render-sparql
   "Render SPARQL from Mustache template on @template-path using @data."
   [template-path & {:keys [data]}]
-  (let [path (if (.isAbsolute (io/as-file template-path))
-               template-path
-               (str "templates/sparql/" template-path ".mustache"))]
-    (render-file path data)))
+  (if (.isAbsolute (io/as-file template-path))
+    (render-string (slurp template-path) data)
+    (render-file (str "templates/sparql/" template-path ".mustache") data)))
 
 (defn- xml->zipper
   "Take XML string @s, parse it, and return XML zipper"
@@ -110,6 +109,18 @@
                   :request-string (render-sparql template-path
                                                  :data (assoc data :virtuoso? (:virtuoso? sparql-endpoint)))))
 
+(defn gnd-loaded?
+  "Check if Gemeinsame Normdatei (GND) is loaded."
+  [endpoint]
+  (let [gnd-graph "http://d-nb.info/standards/elementset/gnd#"]
+    (when-not (ask endpoint "gnd_loaded" :data {:gnd-graph gnd-graph})
+      (exit 1 (format
+                (str
+                  "Please load GND "
+                  "(<http://datendienst.dnb.de/cgi-bin/mabit.pl?userID=opendata&pass=opendata&cmd=login>) "
+                  "into named graph <%s>.")
+                gnd-graph)))))
+
 (defn post-graph
   "Use SPARQL 1.1 Graph Store to POST @payload into a graph named @graph-uri."
   [sparql-endpoint payload graph-uri]
@@ -147,6 +158,7 @@
 (defn templates-from-dir
   "List SPARQL templates in Mustache from a given @dir."
   [dir]
+  {:pre [(not (nil? (io/resource dir)))]}
   (->> dir 
        io/resource
        io/as-file
