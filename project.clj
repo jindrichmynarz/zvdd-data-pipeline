@@ -22,8 +22,12 @@
                  [stencil "0.3.3"]
                  [org.clojure/data.zip "0.1.1"]
                  [slingshot "0.10.3"]
-                 [clojurewerkz/elastisch "2.1.0"]]
+                 [clojurewerkz/elastisch "2.1.0"]
+                 [com.ontologycentral/ldspider "1.3"]
+                 [org.semanticweb.yars/nxparser "1.2.6"]]
   :main zvdd-data-pipeline.core
   :profiles {:uberjar {:aot :all}}
+  :repositories [["ldspider" "http://ldspider.googlecode.com/svn/repository"]
+                 ["nxparser" "http://nxparser.googlecode.com/svn/repository"]]
   :jvm-opts ["-Xmx4g"]
   :uberjar-name "zvdd-data-pipeline.jar")
