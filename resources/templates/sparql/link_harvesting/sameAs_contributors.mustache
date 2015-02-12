@@ -1,0 +1,25 @@
+{{!
+@param IRI source-graph
+@param int limit
+@param int offset
+}}
+
+{{> templates/sparql/prefixes.mustache}}
+
+SELECT ?link
+WHERE {
+  {
+    SELECT DISTINCT ?link
+    WHERE {
+      GRAPH <{{source-graph}}> {
+        [] schema:contributor ?target .
+      }
+      GRAPH <http://d-nb.info/standards/elementset/gnd#> {
+        ?target owl:sameAs ?link .
+      }
+    }
+    ORDER BY ASC(?link)
+  }
+}
+LIMIT {{limit}}
+OFFSET {{offset}}

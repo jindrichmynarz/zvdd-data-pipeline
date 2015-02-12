@@ -8,7 +8,8 @@
             [taoensso.timbre :as timbre]
             [clojure.java.io :as io]
             [clojure.string :refer [join]]
-            [clojure.tools.cli :refer [parse-opts]]))
+            [clojure.tools.cli :refer [parse-opts]])
+  (:import [java.util.logging Level Logger]))
 
 (declare right-trim-slash)
 
@@ -52,6 +53,9 @@
   []
   (let [logfile "log/zvdd_data_pipeline.log"
         log-directory (io/file "log")]
+    ; Set LDSpider log level
+    (.setLevel (Logger/getLogger "com.ontologycentral.ldspider") Level/WARNING)
+    ; Create log directory
     (when-not (.exists log-directory) (.mkdir log-directory))
     (timbre/set-config! [:appenders :standard-out :enabled?] false)
     (timbre/set-config! [:appenders :spit :enabled?] true)
