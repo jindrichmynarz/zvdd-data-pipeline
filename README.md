@@ -21,7 +21,7 @@ The ZVDD data pre-processing pipeline consists of the following tasks:
 * **Linking:** The cleaned data is linked to external datasets using SPARQL Update operations (unfinished).
 * **Harvesting links:** The data is enriched by harvesting external linked data (unfinished).
 * **Extracting RDF:** Each resource's representation is retrieved using a SPARQL CONSTRUCT query (unfinished).
-* **Transformation into JSON-LD:** The enriched data is transformed into JSON-LD trees using SPARQL CONSTRUCT queries and [JSON-LD Framing](http://json-ld.org/spec/latest/json-ld-framing/) (TBD).
+* **Transformation into JSON-LD:** The enriched data is transformed into JSON-LD trees using SPARQL CONSTRUCT queries and [JSON-LD Framing](http://json-ld.org/spec/latest/json-ld-framing/) (unfinished).
 * **Indexing in Elasticsearch:** The JSON-LD trees are loaded into Elasticsearch index using a specified mapping (TBD).
 
 A more detailed description of the ZVDD data ingestion pipeline is available [here](https://docs.google.com/document/d/1RlbZSeZ3Y_cIZ5VMEc7JzK0RaiTwVWDx_-DSwpsWDZk/edit?usp=sharing).

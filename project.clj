@@ -1,4 +1,4 @@
-(defproject zvdd-data-pipeline "0.1.0-SNAPSHOT"
+(defproject zvdd-data-pipeline "0.2.0-SNAPSHOT"
   :description "Data ingestion pipeline for ZVDD data in RDF from DDB"
   :url "http://github.com/jindrichmynarz/zvdd-data-pipeline"
   :license {:name "Eclipse Public License"
@@ -8,7 +8,6 @@
                  [org.clojure/tools.cli "0.3.1"]
                  [environ "1.0.0"]
                  [clj-http "1.0.1"]
-                 [com.taoensso/timbre "3.3.1"]
                  [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
                                                     javax.jms/jms
                                                     com.sun.jmdk/jmxtools
@@ -22,7 +21,6 @@
                  [stencil "0.3.3"]
                  [org.clojure/data.zip "0.1.1"]
                  [slingshot "0.10.3"]
-                 [clojurewerkz/elastisch "2.1.0"]
                  [com.ontologycentral/ldspider "1.3"]
                  [org.semanticweb.yars/nxparser "1.2.6"]]
   :main zvdd-data-pipeline.core
