@@ -7,6 +7,7 @@
             [zvdd-data-pipeline.link :refer [link]]
             [zvdd-data-pipeline.link-harvester :refer [harvest-links]]
             [zvdd-data-pipeline.sparql-extractor :refer [extract-rdf]]
+            [zvdd-data-pipeline.transform :refer [transform]]
             [zvdd-data-pipeline.util :refer [exit]]
             [taoensso.timbre :as timbre]
             [clojure.java.io :as io]
@@ -40,18 +41,15 @@
 
 (def ^:private
   extract-rdf-cli
-  [output-dir
-   help])
+  [output-dir help])
 
 (def ^:private
   harvest-cli
-  [output-dir
-   help])
+  [output-dir help])
 
 (def ^:private
   harvest-links-cli
-  [["-o" "--output FILE" "Output file"]
-   help])
+  [["-o" "--output FILE" "Output file"] help])
 
 (def ^:private
   link-cli
@@ -59,12 +57,18 @@
 
 (def ^:private
   load-cli
-  [input-dir
-   help])
+  [input-dir help])
 
 (def ^:private
   repair-cli
-  [input-dir
+  [input-dir output-dir help])
+
+(def ^:private
+  transform-cli
+  [["-f" "--frame FRAME" "JSON-LD frame for transformation"
+    :validate [#(let [f (io/file %)] (and (.exists f) (.isFile f)))
+               "The JSON-LD frame doesn't exist or isn't a file!"]]
+   input-dir
    output-dir
    help])
 
@@ -100,7 +104,7 @@
   (->> ["ZVDD data processing pipeline"
         ""
         "Usage: java -jar zvdd-data-pipeline.jar [command] [options]"
-        "Supported commands: harvest, repair, load, clean, link, harvest-links, extract-rdf"
+        "Supported commands: harvest, repair, load, clean, link, harvest-links, extract-rdf, transform"
         ""
         "Options:"
         options-summary]
@@ -148,6 +152,9 @@
                            graphs :arguments
                            :as options} (parse-opts opts extract-rdf-cli)]
                       (handle-fn (partial extract-rdf output graphs) options))
+      "transform" (let [{{:keys [frame input output]} :options
+                         :as options} (parse-opts opts transform-cli)]
+                    (handle-fn (partial transform frame input output) options))
       (exit 1 (format "Unsupported command `%s`.
                       Supported command include:
                       - `harvest`
@@ -156,5 +163,6 @@
                       - `clean`
                       - `link`
                       - `harvest-links`
-                      - `extract-rdf`"
+                      - `extract-rdf`
+                      - `transform`"
                       command)))))
