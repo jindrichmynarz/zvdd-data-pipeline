@@ -19,46 +19,54 @@
 ; ----- Private vars -----
 
 (def ^:private
+  help
+  ["-h" "--help"])
+
+(def ^:private
+  input-dir
+  ["-i" "--input INPUT" "Input directory"
+   :parse-fn #'right-trim-slash
+   :validate [#(let [f (io/file %)] (and (.exists f) (.isDirectory f)))
+              "The input directory doesn't exist or isn't a directory!"]])
+
+(def ^:private
+  output-dir
+  ["-o" "--output DIR" "Output directory"
+   :parse-fn #'right-trim-slash])
+
+(def ^:private
   clean-cli
-  [["-h" "--help"]])
+  [help])
 
 (def ^:private
   extract-rdf-cli
-  [["-o" "--output DIR" "Output directory"
-    :parse-fn #'right-trim-slash]
-   ["-h" "--help"]])
+  [output-dir
+   help])
 
 (def ^:private
   harvest-cli
-  [["-o" "--output DIR" "Output directory"
-    :parse-fn #'right-trim-slash]
-   ["-h" "--help"]])
+  [output-dir
+   help])
 
 (def ^:private
   harvest-links-cli
-  [["-o" "--output DIR" "Output directory"
-    :parse-fn #'right-trim-slash]
-   ["-h" "--help"]])
+  [["-o" "--output FILE" "Output file"]
+   help])
 
 (def ^:private
   link-cli
-  [["-h" "--help"]])
+  [help])
 
 (def ^:private
   load-cli
-  [["-i" "--input DIR" "Input directory"
-    :parse-fn #'right-trim-slash]
-   ["-h" "--help"]])
+  [input-dir
+   help])
 
 (def ^:private
   repair-cli
-  [["-i" "--input INPUT" "Input directory"
-    :parse-fn #'right-trim-slash
-    :validate [#(let [f (io/file %)] (and (.exists f) (.isDirectory f)))
-               "The input directory doesn't exist or isn't a directory!"]]
-   ["-o" "--output OUTPUT" "Output directory"
-    :parse-fn #'right-trim-slash]
-   ["-h" "--help"]])
+  [input-dir
+   output-dir
+   help])
 
 ; ----- Private functions -----
 
